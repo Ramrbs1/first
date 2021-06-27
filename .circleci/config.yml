@@ -1,28 +1,33 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-
 jobs:
   save_hello_world_output:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - run: echo "hello world" > ~/output.txt
+      - run: mkdir -p my_workspace
+      - run: echo "Hello World in persist workspace" > my_workspace/echo-output.txt
       - persist_to_workspace:
-          root: ~/
+          root: my_workspace
           paths:
-            - output.txt
-
+           -echo-output.txt
+           
   print_output_file:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - attach_workspace:
-          at: ~/
-      - run: cat ~/output.txt
 
+#      - run: echo world
+      - attach_workspace:
+          at: my_workspace
+      - run : cat my_workspace/echo-output.txt
 workflows:
-  my_workflow:
+  # Name the workflow "welcome"
+  welcome:
+    # Run the welcome/run job in its own container
     jobs:
       - save_hello_world_output
       - print_output_file:
           requires:
             - save_hello_world_output
+            
