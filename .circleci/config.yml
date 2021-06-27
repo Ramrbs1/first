@@ -16,7 +16,7 @@ jobs:
     steps:
 #      - run: echo world
       - attach_workspace:
-          at: /tmp
+          at: tmp
 workflows:
   # Name the workflow "welcome"
   welcome:
