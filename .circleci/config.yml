@@ -5,19 +5,19 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - run: mkdir -p /tmp/ram
-      - run: echo "Hello World in persist workspace" > /tmp/ram/output.txt
+      - run: mkdir -p my_workspace
+      - run: echo "Hello World in persist workspace" > my_workspace/echo-output
       - persist_to_workspace:
-          root: /tmp/ram
+          root: my_workspace
           paths:
-           -output.txt
+           -echo-output
   print_output_file:
     docker:
       - image: circleci/node:13.8.0
     steps:
 #      - run: echo world
       - attach_workspace:
-          at: /tmp/ram
+          at: my_workspace
 workflows:
   # Name the workflow "welcome"
   welcome:
@@ -27,4 +27,3 @@ workflows:
       - print_output_file:
           requires:
             - save_hello_world_output
-            
