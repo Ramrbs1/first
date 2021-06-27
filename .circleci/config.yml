@@ -5,6 +5,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
+      - run: mkdir -p ~/my_workspace
       - run: echo "Hello World in persist workspace" > ~/my_workspace/echo-output.txt
       - persist_to_workspace:
           root: ~/my_workspace
