@@ -6,6 +6,7 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - run: mkdir -p my_workspace
+      -run: touch my_workspace/echo-output
       - run: echo "Hello World in persist workspace" > my_workspace/echo-output
       - persist_to_workspace:
           root: my_workspace
@@ -27,3 +28,4 @@ workflows:
       - print_output_file:
           requires:
             - save_hello_world_output
+            
