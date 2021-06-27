@@ -6,7 +6,7 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - run: mkdir -p /tmp/ram
-      - run: echo "Hello World in persist workspace" > /tmp/ram
+      - run: echo "Hello World in persist workspace" > /tmp/ram/output.txt
       - persist_to_workspace:
           root: /tmp/ram
           paths:
@@ -27,3 +27,4 @@ workflows:
       - print_output_file:
           requires:
             - save_hello_world_output
+            
