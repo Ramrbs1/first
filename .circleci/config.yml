@@ -6,9 +6,9 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - run: mkdir -p my_workspace
-      - run: echo "Hello World in persist workspace" > my_workspace/echo-output.txt
+      - run: echo "Hello World in persist workspace" > /home/circleci/project/my_workspace/echo-output.txt
       - persist_to_workspace:
-          root: my_workspace
+          root: /home/circleci/project/my_workspace
           paths:
            -echo-output.txt
            
@@ -20,7 +20,7 @@ jobs:
 #      - run: echo world
       - attach_workspace:
           at: my_workspace
-      - run : cat my_workspace/echo-output.txt
+      - run : cat /home/circleci/project/my_workspace/echo-output.txt
 workflows:
   # Name the workflow "welcome"
   welcome:
@@ -30,4 +30,5 @@ workflows:
       - print_output_file:
           requires:
             - save_hello_world_output
+            
             
