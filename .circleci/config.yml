@@ -5,6 +5,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
+      - checkout
       - run: mkdir -p my_workspace
       - run: touch my_workspace/echo-output
       - run: echo "Hello World in persist workspace" > my_workspace/echo-output
@@ -16,6 +17,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
+      - checkout
 #      - run: echo world
       - attach_workspace:
           at: my_workspace
@@ -28,4 +30,3 @@ workflows:
       - print_output_file:
           requires:
             - save_hello_world_output
-            
