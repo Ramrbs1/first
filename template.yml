@@ -3,8 +3,9 @@ Description: >
 Parameters:
   EnvironmentName:
       Description: An environment name that will be prefixed to resource names
-      Type: StringResources:
+      Type: String
       Default: MyEnv
+Resources:
   Ec2Instance:
     Type: 'AWS::EC2::Instance'
     Properties:
