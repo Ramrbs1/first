@@ -47,9 +47,10 @@ Resources:
   Ec2Instance:
     Type: 'AWS::EC2::Instance'
     Properties:
+      subnet_id: !Ref PublicSubnet1
       SecurityGroups:
         - !Ref InstanceSecurityGroup
       KeyName: DevopsPrivatekey
       ImageId: 'ami-0aeeebd8d2ab47354'
-      InstanceType: t3.micro
+     
 
