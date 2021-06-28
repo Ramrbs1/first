@@ -47,7 +47,6 @@ Resources:
   Ec2Instance:
     Type: 'AWS::EC2::Instance'
     Properties:
-      VpcId: !Ref VPC
       SecurityGroups:
         - !Ref InstanceSecurityGroup
       KeyName: DevopsPrivatekey
