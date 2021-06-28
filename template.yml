@@ -1,7 +1,15 @@
-Resources:
+Description: >
+    circle Ci pipe line
+Parameters:
+  EnvironmentName:
+      Description: An environment name that will be prefixed to resource names
+      Type: StringResources:
+      Default: MyEnv
   Ec2Instance:
     Type: 'AWS::EC2::Instance'
     Properties:
+      VpcId:
+        Fn::ImportValue: !Sub "${EnvironmentName}-VPCID"
       SecurityGroups:
         - !Ref InstanceSecurityGroup
       KeyName: DevopsPrivatekey
