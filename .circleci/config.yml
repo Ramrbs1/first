@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  create_and_deploy_front_end:
+  create_and_deploy_front_end_blue:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -10,9 +10,9 @@ jobs:
             --template-file bucket.yml \
             --stack-name prod-"${CIRCLE_WORKFLOW_ID:0:7}" \
             --parameter-overrides NAME="${CIRCLE_WORKFLOW_ID:0:7}"
-      - run: aws s3 sync . s3://"${CIRCLE_WORKFLOW_ID:0:7}" --delete
+      - run: aws s3 cp index.html s3://"${CIRCLE_WORKFLOW_ID:0:7}" 
 
-  promote_to_production:
+  promote_to_production_blue:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -23,11 +23,69 @@ jobs:
             --stack-name cloudfront \
             --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID:0:7}"
 
-
+  get_last_deployment_id:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - run: |
+         aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text > ~/last_deployment_id.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+           - last_deployment_id.txt
+           
+  create_and_deploy_front_end_green:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: |
+          aws cloudformation deploy \
+            --template-file bucket.yml \
+            --stack-name prod-"${CIRCLE_WORKFLOW_ID:0:8}" \
+            --parameter-overrides NAME="${CIRCLE_WORKFLOW_ID:0:8}"
+      - run: aws s3 cp index.html s3://"${CIRCLE_WORKFLOW_ID:0:8}"
+      
+  promote_to_production_green:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: |
+          aws cloudformation deploy \
+            --template-file cloudfront.yml \
+            --stack-name cloudfront \
+            --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID:0:8}"
+          
+  clean_up_old_front_end:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run : OldPipelineID=`cat ~/last_deployment_id.txt`
+      - run: |
+          aws s3 rm "s3://prod-${OldPipelineID}" --recursive
+          aws cloudformation delete-stack --stack-name "prod-${OldPipelineID}"
+          
+    
 workflows:
   default:
     jobs:
-      - create_and_deploy_front_end
-      - promote_to_production:
+      - create_and_deploy_front_end_blue
+      - promote_to_production_blue:
           requires:
-            - create_and_deploy_front_end
+            - create_and_deploy_front_end_blue
+      - get_last_deployment_id:
+          requires:
+            - promote_to_production_blue
+      - create_and_deploy_front_end_green:
+          requires:
+            - get_last_deployment_id
+      - promote_to_production_green:
+          requires:
+            - create_and_deploy_front_end_green
+      - clean_up_old_front_end:
+          requires:
+            - promote_to_production_green
