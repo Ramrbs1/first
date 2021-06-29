@@ -5,7 +5,6 @@ Parameters:
     Default: MyPipeline
 
 Resources:
-
   CloudFrontOriginAccessIdentity:
     Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
     Properties:
