@@ -16,7 +16,6 @@ jobs:
           name: Configure server
           command: |
             ansible-playbook -i inventory site_apache.yml
-
 workflows:
   my_workflow:
     jobs:
