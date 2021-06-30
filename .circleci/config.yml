@@ -65,12 +65,13 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run: |
+          yum install -y tar # install the tar
+          yum install -y gzip # install the gzip
       - attach_workspace:
           at: ~/
       - run : OldPipelineID=`cat ~/last_deployment_id.txt`
       - run: |
-          yum install -y tar # install the tar
-          yum install -y gzip # install the gzip
           aws s3 rm "s3://${OldPipelineID}" --recursive
           aws cloudformation delete-stack --stack-name "prod-${OldPipelineID}"
           aws cloudformation delete-stack --stack-name "cloudfront-${OldPipelineID}"
