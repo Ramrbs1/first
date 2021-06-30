@@ -9,7 +9,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --no-cache tar # install the tar
+            sudo yum install tar # install the tar
 workflows:
   my_workflow:
     jobs:
