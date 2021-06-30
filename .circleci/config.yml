@@ -56,8 +56,8 @@ jobs:
       - checkout
       - run: |
           aws cloudformation deploy \
-            --template-file cloudfront.yml \
-            --stack-name cloudfront \
+            --template-file cloudfront1.yml \
+            --stack-name cloudfront-"${CIRCLE_WORKFLOW_ID:0:8}" \
             --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID:0:8}"
           
   clean_up_old_front_end:
@@ -70,7 +70,8 @@ jobs:
       - run : OldPipelineID=`cat ~/last_deployment_id.txt`
       - run: |
           yum install -y tar # install the tar
-          aws s3 rm "s3://prod-${OldPipelineID}" --recursive
+          yum install -y gzip # install the gzip
+          aws s3 rm "s3://${OldPipelineID}" --recursive
           aws cloudformation delete-stack --stack-name "prod-${OldPipelineID}"
           aws cloudformation delete-stack --stack-name "cloudfront-${OldPipelineID}"
           
