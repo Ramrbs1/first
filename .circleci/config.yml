@@ -75,6 +75,7 @@ jobs:
           OldPipelineID=`cat ~/last_deployment_id.txt`
           echo ${OldPipelineID}
       - run: |
+          aws s3 ls|grep `echo ${OldPipelineID}`
           aws s3 rb "s3://blue-${OldPipelineID}" --force
           aws cloudformation delete-stack --stack-name "prod-${OldPipelineID}"
           aws cloudformation delete-stack --stack-name "cloudfront-${OldPipelineID}"
