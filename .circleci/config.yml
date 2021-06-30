@@ -83,7 +83,10 @@ jobs:
 workflows:
   default:
     jobs:
-      - clean_up_old_front_end
+      - get_last_deployment_id
+      - clean_up_old_front_end:
+          requires:
+            - get_last_deployment_id
 #      - create_and_deploy_front_end_blue
 #      - promote_to_production_blue:
 #          requires:
