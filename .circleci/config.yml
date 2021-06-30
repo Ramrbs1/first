@@ -29,7 +29,7 @@ jobs:
     steps:
       - run: |
          yum install -y tar # install the tar
-
+         yum install -y gzip # install the gzip
          aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text > ~/last_deployment_id.txt
       - persist_to_workspace:
           root: ~/
@@ -77,21 +77,20 @@ jobs:
 workflows:
   default:
     jobs:
-
-      - create_and_deploy_front_end_blue
-      - promote_to_production_blue:
-          requires:
-            - create_and_deploy_front_end_blue
-      - get_last_deployment_id:
-          requires:
-            - promote_to_production_blue
-      - create_and_deploy_front_end_green:
-          requires:
-            - get_last_deployment_id
-      - promote_to_production_green:
-          requires:
-            - create_and_deploy_front_end_green
-      - clean_up_old_front_end:
-          requires:
-            - promote_to_production_green
-
+      - get_last_deployment_id
+#      - create_and_deploy_front_end_blue
+#      - promote_to_production_blue:
+#          requires:
+#            - create_and_deploy_front_end_blue
+#      - get_last_deployment_id:
+#          requires:
+#            - promote_to_production_blue
+#      - create_and_deploy_front_end_green:
+#          requires:
+#            - get_last_deployment_id
+#      - promote_to_production_green:
+#          requires:
+#            - create_and_deploy_front_end_green
+#      - clean_up_old_front_end:
+#          requires:
+#            - promote_to_production_greenS
