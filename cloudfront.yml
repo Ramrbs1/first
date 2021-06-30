@@ -16,7 +16,7 @@ Resources:
     Properties:
       DistributionConfig:
         Origins:
-          - DomainName: !Sub "${PipelineID}.s3.amazonaws.com"
+          - DomainName: !Sub "blue-${PipelineID}.s3.amazonaws.com"
             Id: webpage
             S3OriginConfig:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
@@ -32,4 +32,4 @@ Outputs:
   PipelineID:
     Value: !Sub ${PipelineID}
     Export:
-      Name: PipelineID
+      Name: PipelineID-blue

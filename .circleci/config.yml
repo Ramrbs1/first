@@ -9,8 +9,8 @@ jobs:
           aws cloudformation deploy \
             --template-file bucket.yml \
             --stack-name prod-"${CIRCLE_WORKFLOW_ID:0:7}" \
-            --parameter-overrides NAME="${CIRCLE_WORKFLOW_ID:0:7}"
-      - run: aws s3 cp index.html s3://"${CIRCLE_WORKFLOW_ID:0:7}" 
+            --parameter-overrides NAME="blue-${CIRCLE_WORKFLOW_ID:0:7}"
+      - run: aws s3 cp index.html s3://"blue-${CIRCLE_WORKFLOW_ID:0:7}" 
 
   promote_to_production_blue:
     docker:
@@ -44,10 +44,10 @@ jobs:
       - checkout
       - run: |
           aws cloudformation deploy \
-            --template-file bucket.yml \
+            --template-file bucket1.yml \
             --stack-name prod-"${CIRCLE_WORKFLOW_ID:0:8}" \
-            --parameter-overrides NAME="${CIRCLE_WORKFLOW_ID:0:8}"
-      - run: aws s3 cp index.html s3://"${CIRCLE_WORKFLOW_ID:0:8}"
+            --parameter-overrides NAME="green-${CIRCLE_WORKFLOW_ID:0:8}"
+      - run: aws s3 cp index.html s3://"green-${CIRCLE_WORKFLOW_ID:0:8}"
       
   promote_to_production_green:
     docker:
@@ -75,7 +75,7 @@ jobs:
           OldPipelineID=`cat ~/last_deployment_id.txt`
           echo ${OldPipelineID}
       - run: |
-          aws s3 rm "s3://${OldPipelineID}" --recursive
+          aws s3 rm "s3://blue-${OldPipelineID}" --recursive
           aws cloudformation delete-stack --stack-name "prod-${OldPipelineID}"
           aws cloudformation delete-stack --stack-name "cloudfront-${OldPipelineID}"
           
@@ -83,23 +83,23 @@ jobs:
 workflows:
   default:
     jobs:
-      - get_last_deployment_id
-      - clean_up_old_front_end:
-          requires:
-            - get_last_deployment_id
-#      - create_and_deploy_front_end_blue
-#      - promote_to_production_blue:
-#          requires:
-#            - create_and_deploy_front_end_blue
-#      - get_last_deployment_id:
-#          requires:
-#            - promote_to_production_blue
-#      - create_and_deploy_front_end_green:
-#          requires:
-#            - get_last_deployment_id
-#      - promote_to_production_green:
-#          requires:
-#            - create_and_deploy_front_end_green
+#      - get_last_deployment_id
 #      - clean_up_old_front_end:
 #          requires:
-#            - promote_to_production_green
+#            - get_last_deployment_id
+      - create_and_deploy_front_end_blue
+      - promote_to_production_blue:
+          requires:
+            - create_and_deploy_front_end_blue
+      - get_last_deployment_id:
+          requires:
+            - promote_to_production_blue
+      - create_and_deploy_front_end_green:
+          requires:
+            - get_last_deployment_id
+      - promote_to_production_green:
+          requires:
+            - create_and_deploy_front_end_green
+      - clean_up_old_front_end:
+          requires:
+            - promote_to_production_green
