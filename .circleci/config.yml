@@ -76,7 +76,7 @@ jobs:
           echo ${OldPipelineID}
       - run: |
           aws s3 ls|grep blue
-          aws s3 rb "s3://blue-3debbf9" --force
+          aws s3 rm --recursive s3://blue--${OldPipelineID} 
           aws cloudformation delete-stack --stack-name "prod-${OldPipelineID}"
           aws cloudformation delete-stack --stack-name "cloudfront-${OldPipelineID}"
           
